@@ -1,0 +1,36 @@
+services:
+  camd:
+    build: .
+    image: camera-service:latest
+    container_name: camd
+    restart: unless-stopped
+    environment:
+      CAMERA_HOST: "10.1.0.21"
+      # Verified stock login is mode 0 (user "admin", no password check at
+      # all -- CAMERA-PROTOCOL.md section 3), so CAMERA_PASSWORD is left
+      # unset here. Only set it if this camera's login has been
+      # reconfigured to require real credentials (mode 1); prefer an
+      # env_file or Docker secret over committing a real password here.
+      CAMERA_USER: "admin"
+      # CAMERA_PASSWORD: ""
+      # Must be an address clients on the LAN can actually reach this
+      # container at. With host networking (below) that's this machine's
+      # own LAN IP.
+      SERVICE_HOST: "10.1.0.43"
+      RTSP_PORT: "554"
+      ONVIF_PORT: "80"
+      WS_DISCOVERY: "true"
+      DEVICE_NAME: "IPW-F2A2D1E1"
+    # Host networking so RTSP/ONVIF are reachable on the LAN at SERVICE_HOST
+    # and WS-Discovery's UDP multicast (239.255.255.250:3702) actually works.
+    # Works on Linux hosts (e.g. a small always-on box on the LAN). Docker
+    # Desktop on macOS does not support host networking the same way --
+    # if running there, comment this out and use the `ports:` block instead
+    # (WS-Discovery multicast will not work through Docker Desktop's NAT,
+    # but RTSP/ONVIF will still work with an NVR/client pointed directly at
+    # SERVICE_HOST).
+    network_mode: "host"
+    # ports:
+    #   - "554:554"
+    #   - "80:80"
+    #   - "3702:3702/udp"
