@@ -71,16 +71,16 @@ func main() {
 		cancel()
 	}()
 
-	main10 := stream.New("camera10", inf.StreamMain, cameraHost, credentials)
-	sub10 := stream.New("camera10_sub", inf.StreamSub, cameraHost, credentials)
-	go main10.Run(ctx)
-	go sub10.Run(ctx)
+	mainStream := stream.New(deviceName, inf.StreamMain, cameraHost, credentials)
+	subStream := stream.New(deviceName+"_sub", inf.StreamSub, cameraHost, credentials)
+	go mainStream.Run(ctx)
+	go subStream.Run(ctx)
 
 	rtspSrv := &rtsp.Server{
 		Port: rtspPort,
 		Streams: map[string]*stream.State{
-			main10.Name: main10,
-			sub10.Name:  sub10,
+			mainStream.Name: mainStream,
+			subStream.Name:  subStream,
 		},
 	}
 
@@ -92,8 +92,8 @@ func main() {
 		CameraHost:  cameraHost,
 		Credentials: credentials,
 		Streams: []onvif.StreamInfo{
-			{Name: main10.Name, Width: 1920, Height: 1080},
-			{Name: sub10.Name, Width: 640, Height: 360},
+			{Name: mainStream.Name, Width: 1920, Height: 1080},
+			{Name: subStream.Name, Width: 640, Height: 360},
 		},
 	}
 

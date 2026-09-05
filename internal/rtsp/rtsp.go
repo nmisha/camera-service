@@ -25,7 +25,7 @@ const (
 
 type Server struct {
 	Port    int
-	Streams map[string]*stream.State // keyed by mount name, e.g. "camera10"
+	Streams map[string]*stream.State // keyed by mount name, e.g. "IPW-F2A2D1E1"
 }
 
 func (s *Server) ListenAndServe(ctx context.Context) error {
@@ -54,7 +54,7 @@ func (s *Server) ListenAndServe(ctx context.Context) error {
 }
 
 func (s *Server) matchStream(url string) *stream.State {
-	// Check longer/more specific names first (e.g. "camera10_sub" contains "camera10").
+	// Check longer/more specific names first (e.g. "IPW-F2A2D1E1_sub" contains "IPW-F2A2D1E1").
 	var best *stream.State
 	for name, st := range s.Streams {
 		if strings.Contains(url, name) {

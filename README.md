@@ -31,7 +31,9 @@ internal/onvif          — WS-Discovery + SOAP: Device/Media/PTZ
 | `RTSP_PORT`    | `554`             | Порт RTSP-сервера |
 | `ONVIF_PORT`   | `80`              | Порт ONVIF SOAP (Device/Media/PTZ) |
 | `WS_DISCOVERY` | `true`            | Включить WS-Discovery (UDP-мультикаст `239.255.255.250:3702`) |
-| `DEVICE_NAME`  | `IPW-F2A2D1E1`    | Значение в ответах `GetDeviceInformation` |
+| `DEVICE_NAME`  | `IPW-F2A2D1E1`    | Имя камеры в ONVIF и основной путь RTSP; дополнительный поток — `<DEVICE_NAME>_sub`. Используйте латинские буквы, цифры, дефис и подчёркивание |
+
+В Docker Compose `DEVICE_NAME` берётся из окружения или файла `.env`, по умолчанию — `IPW-F2A2D1E1`. Например, `DEVICE_NAME=Entrance` задаёт пути `/Entrance` и `/Entrance_sub`. После изменения пересоздайте контейнер: `docker compose up -d --build`.
 
 ## Запуск
 
@@ -105,11 +107,11 @@ CAMERA_HOST=10.1.0.21 SERVICE_HOST=127.0.0.1 RTSP_PORT=9555 ONVIF_PORT=8080 WS_D
   go run ./cmd/camd
 ```
 
-Так проверялось при разработке: `ffmpeg -rtsp_transport tcp -i rtsp://127.0.0.1:9555/camera10` и `curl -X POST http://127.0.0.1:8080/onvif/device_service -d '<...GetDeviceInformation.../>'`.
+Так проверялось при разработке: `ffmpeg -rtsp_transport tcp -i rtsp://127.0.0.1:9555/IPW-F2A2D1E1` и `curl -X POST http://127.0.0.1:8080/onvif/device_service -d '<...GetDeviceInformation.../>'`.
 
 ## Что отдаёт сервис
 
-- RTSP: `rtsp://<SERVICE_HOST>:<RTSP_PORT>/camera10` (1920×1080) и `/camera10_sub` (640×360). Только `RTSP over TCP` — транспорт по UDP не поддержан (осознанное упрощение, см. `internal/rtsp`).
+- RTSP: `rtsp://<SERVICE_HOST>:<RTSP_PORT>/IPW-F2A2D1E1` (1920×1080) и `/IPW-F2A2D1E1_sub` (640×360). Только `RTSP over TCP` — транспорт по UDP не поддержан (осознанное упрощение, см. `internal/rtsp`).
 - ONVIF SOAP: `http://<SERVICE_HOST>:<ONVIF_PORT>/onvif/{device,media,ptz,imaging}_service`.
 - WS-Discovery: отвечает на `Probe` от NVR/ONVIF-клиентов в локальной сети.
 

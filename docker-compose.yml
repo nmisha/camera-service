@@ -20,7 +20,7 @@ services:
       RTSP_PORT: "554"
       ONVIF_PORT: "80"
       WS_DISCOVERY: "true"
-      DEVICE_NAME: "IPW-F2A2D1E1"
+      DEVICE_NAME: "${DEVICE_NAME:-IPW-F2A2D1E1}"
     # Host networking so RTSP/ONVIF are reachable on the LAN at SERVICE_HOST
     # and WS-Discovery's UDP multicast (239.255.255.250:3702) actually works.
     # Works on Linux hosts (e.g. a small always-on box on the LAN). Docker
